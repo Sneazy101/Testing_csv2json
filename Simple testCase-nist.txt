@@ -1,0 +1,80 @@
+# ACTS Test Suite Generation: Thu Oct 08 01:00:22 PDT 2026
+#  "(don't care)" represents don't care value 
+# Degree of interaction coverage: 2
+# Number of parameters: 3
+# Maximum number of values per parameter: 3
+# Number of configurations: 9
+------------Test Cases--------------
+
+Configuration #1:
+
+1 = OutputFormal=null
+2 = StructuralFlags=-F
+3 = DataCleaning=--remove-empty-strings
+
+-------------------------------------
+
+Configuration #2:
+
+1 = OutputFormal=--out-dir
+2 = StructuralFlags=-F
+3 = DataCleaning=--remove-empty-objects
+
+-------------------------------------
+
+Configuration #3:
+
+1 = OutputFormal=null
+2 = StructuralFlags=-F
+3 = DataCleaning=null
+
+-------------------------------------
+
+Configuration #4:
+
+1 = OutputFormal=--out-dir
+2 = StructuralFlags=-l
+3 = DataCleaning=--remove-empty-strings
+
+-------------------------------------
+
+Configuration #5:
+
+1 = OutputFormal=null
+2 = StructuralFlags=-l
+3 = DataCleaning=--remove-empty-objects
+
+-------------------------------------
+
+Configuration #6:
+
+1 = OutputFormal=--out-dir
+2 = StructuralFlags=-l
+3 = DataCleaning=null
+
+-------------------------------------
+
+Configuration #7:
+
+1 = OutputFormal=null
+2 = StructuralFlags=null
+3 = DataCleaning=--remove-empty-strings
+
+-------------------------------------
+
+Configuration #8:
+
+1 = OutputFormal=--out-dir
+2 = StructuralFlags=null
+3 = DataCleaning=--remove-empty-objects
+
+-------------------------------------
+
+Configuration #9:
+
+1 = OutputFormal=null
+2 = StructuralFlags=null
+3 = DataCleaning=null
+
+-------------------------------------
+
