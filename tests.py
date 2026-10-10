@@ -1,8 +1,19 @@
 import subprocess
 import shlex
 import re
+import shutil
+import sys
+from pathlib import Path
 
-def run_acts_tests(acts_file, input_csv):
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+def find_csv2json(override_path=None):
+    path = shutil.which(override_path or "csv2json")
+    if not path:
+        sys.exit("Error: 'csv2json' executable not found. Please ensure it is installed and in your PATH.")
+    return path
+
+def run_acts_tests(acts_file, input_csv, csv2json):
     # Read the generated ACTS test suite
     try:
         with open(acts_file, 'r') as f:
@@ -25,7 +36,7 @@ def run_acts_tests(acts_file, input_csv):
         config_num = config_num_match.group(1)
 
         # Initialize the base command
-        cmd = ["/home/sneazy/.cargo/bin/csv2json"]
+        cmd = [csv2json]
 
         # Parse the parameter lines for this configuration
         for line in config.strip().split('\n'):
@@ -63,9 +74,6 @@ def run_acts_tests(acts_file, input_csv):
             if result.stderr:
                 print(f"Error Output:\n{result.stderr}")
 
-        except FileNotFoundError:
-            print("Error: The 'csv2json' command was not found. Ensure it is installed and in your PATH.")
-            break
         except Exception as e:
             print(f"An unexpected execution error occurred: {e}")
 
@@ -77,4 +85,5 @@ if __name__ == "__main__":
     input_file = "people-10000.csv"
     acts_file = "Simple testCase-nist.txt"
 
-    run_acts_tests(acts_file, input_file)
+    csv2json = find_csv2json()
+    run_acts_tests(acts_file, input_file, csv2json)
