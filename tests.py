@@ -1,135 +1,142 @@
-import os
 import subprocess
 import shlex
 import re
-import csv
 import shutil
 import sys
-import random
+import os
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+INPUT_CSV = SCRIPT_DIR / "test_data" / "test_files" / "people-10000.csv"
+EMPTY_CSV = str(SCRIPT_DIR / "test_data" / "test_files" / "empty.csv")
+TEMP_DIR = str(SCRIPT_DIR / "test_data" / "test_files" / "temp_dir")
 
-SAMPLE_ROWS = 30
-TEST_CSV = "test_input.csv"
-NUMERIC_COL = "Index"
-FILE_DELIMITER = {"semicolon": ";", "colon": ":"}
-OUT_DIR = "temp"
-DIMSEP_HEADERS = {
-    "dot": ["name.first", "name.last", "address.street"],
+COL_FOR_CONVERSION = {
+    "--numeric": "Index",
+    "--boolean": "HasPets",
 }
 
-# parameter values
-FLAGS = {
-    "delimiter": {"colon": ["-d", ":"], "semicolon": ["-d", ";"]},
-    "dimensional_separator": {"dot": ["-D", "."]},
-    "array_processing": {"enabled": ["-a"]},
-    "output_format": {"folded": ["-F"], "jsonl": ["--jsonl"]},
-    "remove_empty": {"strings_only": ["--remove-empty-strings"],
-                     "object_only": ["--remove-empty-objects"]},
-    "output_dest": {"out_dir": ["--out-dir", OUT_DIR],
-                    "out_dir_and_name": ["--out-dir", OUT_DIR, "--out-name", "result"]},
-    "type_conversion": {"numeric_only": ["--numeric"], "boolean_only": ["--boolean"]},
-}
-
-#find the csv2json executable
 def find_csv2json(override_path=None):
     path = shutil.which(override_path or "csv2json")
     if not path:
         sys.exit("Error: 'csv2json' executable not found. Please ensure it is installed and in your PATH.")
     return path
 
-#read the ACTS test file and return its content
-def read_test_file(acts_file):
+def run_acts_tests(acts_file, input_csv, csv2json):
+    # Read the generated ACTS test suite
     try:
-        with open(acts_file, newline="", encoding="utf-8") as f:
+        with open(acts_file, 'r') as f:
             content = f.read()
     except FileNotFoundError:
-        sys.exit(f"Error: Could not find the ACTS file '{acts_file}'.")
-    return content
+        print(f"Error: Could not find the ACTS file '{acts_file}'.")
+        return
 
-#read sample data and return header and rows
-def read_source_csv(input_csv):
-    with open(input_csv, newline="", encoding="utf-8") as f:
-        reader = csv.reader(f)
-        header = next(reader)
-        rows = list(reader)
-    return header, rows
+    #pass over empty CSV test case if the test says so
+    input_files = {
+        "valid_data": input_csv,
+        "empty_file": EMPTY_CSV,
+    }
+    open(EMPTY_CSV, "w").close() #create emtpy csv file for testing
+    passed = 0
+    failed = []
 
-def write_sample_csv(case, test_csv, src_header, sample_rows):
-    with open(test_csv, "w", newline="", encoding="utf-8") as f:
-        if case["input_file_stat"] != "empty_file":
-            extra = DIMSEP_HEADERS.get(case["dimensional_separator"], [])
-            header = src_header + extra
-            rows = [row + [""] * len(extra) for row in sample_rows]
-            delimiter = FILE_DELIMITER.get(case["delimiter"], ",")
-            writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
-            writer.writerow(header)
-            writer.writerows(rows)
-    return test_csv
+    try:
 
-def run_acts_tests(acts_file, input_csv, csv2json):
-    acts_output = read_test_file(acts_file)
-    header, rows = read_source_csv(input_csv)
+        # Split the document by the separator lines
+        configs = content.split("-------------------------------------")
 
-    # turn the test file into list of test cases
-    lines = [l for l in acts_output.splitlines() if l.strip() and not l.startswith("#")]
-    cases = list(csv.DictReader(lines))
+        for config in configs:
+            if "Configuration #" not in config:
+                continue
 
-    counts = {}
-    for n, case in enumerate(cases, start=1):
-        shutil.rmtree(OUT_DIR, ignore_errors=True)
-        os.makedirs(OUT_DIR)
+            # Extract the configuration number
+            config_num_match = re.search(r'Configuration #(\d+):', config)
+            if not config_num_match:
+                continue
+            config_num = config_num_match.group(1)
 
-        #pick random sample of rows for this test case
-        random.seed(n)  # For reproducible results
-        sample_rows = random.sample(rows, min(SAMPLE_ROWS, len(rows)))
-        test_file = write_sample_csv(case, TEST_CSV, header, sample_rows)
+            #create fresh temp folder for each test case to avoid file conflicts
+            shutil.rmtree(TEMP_DIR, ignore_errors=True)
+            os.makedirs(TEMP_DIR, exist_ok=True)
 
-        # Initialize the base command
-        cmd = [csv2json]
+            # Initialize the base command and default input file
+            cmd = [csv2json]
+            file_for_case = input_csv
 
-        for param, values in FLAGS.items():
-            cmd += values.get(case[param], [])
-        cmd += ["--in", test_file]
+            # Parse the parameter lines for this configuration
+            for line in config.strip().split('\n'):
+                line = line.strip()
 
-        print(f"========= Running Configuration #{n} =========")
-        print(f"Executing: {' '.join(cmd)}")
+                # Look for lines formatted like "1 = OutputType=--out-dir temp.json"
+                if '=' in line and not line.startswith('Configuration'):
+                    # Split at the first two equals signs
+                    parts = line.split('=', 2)
 
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10,
-                                    encoding="utf-8", errors="replace")
+                    if len(parts) >= 3:
+                        name = parts[1].strip()
+                        val = parts[2].strip()
 
-            if result.stdout:
-                # Truncating stdout to 300 characters to prevent terminal flooding
-                print(f"Output (truncated): {result.stdout[:300]}...")
+                        if name == "input_file_stat":
+                            file_for_case = input_files.get(val, input_csv)
 
-            if result.stderr:
-                print(f"Error Output:\n{result.stderr}")
+                        # Ignore 'null' values entirely
+                        elif val != 'null':
+                            # shlex.split handles spaces in arguments correctly
+                            # e.g., turning "-D  -a" into ['-D', '-a']
+                            # or "--out-name {Index}-{User Id}" into ['--out-name', '{Index}-{User Id}']
+                            for token in shlex.split(val):
+                                cmd.append(token)
+                                #for type conversion
+                                if token in COL_FOR_CONVERSION:
+                                    cmd.append(COL_FOR_CONVERSION[token])
 
-            if result.returncode == 101 or "panicked" in result.stderr:
-                verdict = "PANIC"
-            elif result.returncode != 0:
-                verdict = "ERROR"
-            else:
-                verdict = "OK"
+            if "--out-dir" in cmd:
+                i = cmd.index("--out-dir")
+                if i + 1 < len(cmd):
+                    cmd[i+1] = TEMP_DIR  # Redirect output to the temporary directory
+            
+            cmd.extend(["--in", file_for_case])
+            print(f"=== Running Configuration #{config_num} ===")
+            print(f"Executing: {' '.join(cmd)}")
 
-        except subprocess.TimeoutExpired:
-            verdict = "TIMEOUT"
-        except Exception as e:
-            print(f"An unexpected execution error occurred: {e}")
-            verdict = "EXCEPTION"
+            try:
+                # Execute the command with subprocess
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
-        print(f"Verdict: {verdict}\n")
-        counts[verdict] = counts.get(verdict, 0) + 1
+                print(f"Return Code: {result.returncode}")
 
-    print("Summary:", counts)
+                if result.stdout:
+                    # Truncating stdout to 300 characters to prevent terminal flooding
+                    print(f"Output (truncated): {result.stdout[:300]}...")
 
+                if result.stderr:
+                    print(f"Error Output:\n{result.stderr}")
+
+                if result.returncode == 0:
+                    passed += 1
+                else:
+                    failed.append(config_num)
+
+            except Exception as e:
+                print(f"An unexpected execution error occurred: {e}")
+                failed.append(config_num)
+
+            print("\n")
+    finally:
+        Path(EMPTY_CSV).unlink(missing_ok=True)  # remove empty CSV file after tests
+        shutil.rmtree(TEMP_DIR, ignore_errors=True)  # remove temp directory after tests
+
+    total = passed + len(failed)
+    print("=== Test Summary ===")
+    print(f"Total Configurations Tested: {total}")
+    print(f"Passed: {passed}")
+    if failed:
+        print(f"Failed Configurations: {', '.join(failed)}")
 
 if __name__ == "__main__":
     # Target files stored as variables
-    input_file = "people-10000.csv"
-    acts_file = "acts_out.csv"
+    input_file = str(INPUT_CSV)
+    acts_file = str(SCRIPT_DIR / "test_data" / "test_files" / "csv2json-nist-test.txt")
 
     csv2json = find_csv2json()
     run_acts_tests(acts_file, input_file, csv2json)
