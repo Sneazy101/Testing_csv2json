@@ -1,0 +1,15 @@
+[System]
+Name: csv2json
+
+[Parameter]
+input_file_stat (enum) : valid_data, empty_file
+delimiter (enum) : comma, colon, semicolon
+dimensional_separator (enum) : none, dot
+array_processing (enum) : disabled, enabled
+output_format (enum) : standard, folded, jsonl
+remove_empty (enum) : disabled, strings_only, object_only
+output_dest (enum) : stdout, out_dir, out_dir_and_name
+type_conversion (enum) : none, numeric_only, boolean_only
+
+--we can add a Contraint section if needed
+--[Constraint]

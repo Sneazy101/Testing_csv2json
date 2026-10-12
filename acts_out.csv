@@ -1,0 +1,22 @@
+# ACTS Test Suite Generation: Sun Oct 11 20:38:56 PDT 2026
+#  '*' represents don't care value 
+# Degree of interaction coverage: 2
+# Number of parameters: 8
+# Maximum number of values per parameter: 3
+# Number of configurations: 15
+input_file_stat,delimiter,dimensional_separator,array_processing,output_format,remove_empty,output_dest,type_conversion
+empty_file,comma,dot,enabled,standard,strings_only,out_dir,numeric_only
+valid_data,comma,none,disabled,folded,object_only,out_dir_and_name,boolean_only
+empty_file,comma,none,enabled,jsonl,disabled,stdout,none
+valid_data,colon,dot,disabled,standard,object_only,stdout,numeric_only
+empty_file,colon,dot,enabled,folded,disabled,out_dir,boolean_only
+valid_data,colon,dot,disabled,jsonl,strings_only,out_dir_and_name,none
+empty_file,semicolon,none,disabled,standard,disabled,out_dir_and_name,numeric_only
+valid_data,semicolon,none,enabled,folded,strings_only,stdout,boolean_only
+empty_file,semicolon,dot,disabled,jsonl,object_only,out_dir,none
+valid_data,colon,none,enabled,standard,disabled,out_dir,none
+valid_data,colon,dot,enabled,folded,object_only,out_dir_and_name,none
+valid_data,semicolon,dot,enabled,folded,object_only,out_dir_and_name,numeric_only
+empty_file,semicolon,dot,enabled,jsonl,object_only,out_dir_and_name,numeric_only
+valid_data,colon,none,disabled,standard,disabled,out_dir_and_name,boolean_only
+empty_file,semicolon,none,disabled,jsonl,object_only,out_dir_and_name,boolean_only

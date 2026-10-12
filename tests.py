@@ -1,71 +1,104 @@
+import os
 import subprocess
 import shlex
 import re
+import csv
 import shutil
 import sys
+import random
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
+SAMPLE_ROWS = 30
+TEST_CSV = "test_input.csv"
+NUMERIC_COL = "Index"
+FILE_DELIMITER = {"semicolon": ";", "colon": ":"}
+OUT_DIR = "temp"
+DIMSEP_HEADERS = {
+    "dot": ["name.first", "name.last", "address.street"],
+}
+
+# parameter values
+FLAGS = {
+    "delimiter": {"colon": ["-d", ":"], "semicolon": ["-d", ";"]},
+    "dimensional_separator": {"dot": ["-D", "."]},
+    "array_processing": {"enabled": ["-a"]},
+    "output_format": {"folded": ["-F"], "jsonl": ["--jsonl"]},
+    "remove_empty": {"strings_only": ["--remove-empty-strings"],
+                     "object_only": ["--remove-empty-objects"]},
+    "output_dest": {"out_dir": ["--out-dir", OUT_DIR],
+                    "out_dir_and_name": ["--out-dir", OUT_DIR, "--out-name", "result"]},
+    "type_conversion": {"numeric_only": ["--numeric"], "boolean_only": ["--boolean"]},
+}
+
+#find the csv2json executable
 def find_csv2json(override_path=None):
     path = shutil.which(override_path or "csv2json")
     if not path:
         sys.exit("Error: 'csv2json' executable not found. Please ensure it is installed and in your PATH.")
     return path
 
-def run_acts_tests(acts_file, input_csv, csv2json):
-    # Read the generated ACTS test suite
+#read the ACTS test file and return its content
+def read_test_file(acts_file):
     try:
-        with open(acts_file, 'r') as f:
+        with open(acts_file, newline="", encoding="utf-8") as f:
             content = f.read()
     except FileNotFoundError:
-        print(f"Error: Could not find the ACTS file '{acts_file}'.")
-        return
+        sys.exit(f"Error: Could not find the ACTS file '{acts_file}'.")
+    return content
 
-    # Split the document by the separator lines
-    configs = content.split("-------------------------------------")
+#read sample data and return header and rows
+def read_source_csv(input_csv):
+    with open(input_csv, newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        rows = list(reader)
+    return header, rows
 
-    for config in configs:
-        if "Configuration #" not in config:
-            continue
+def write_sample_csv(case, test_csv, src_header, sample_rows):
+    with open(test_csv, "w", newline="", encoding="utf-8") as f:
+        if case["input_file_stat"] != "empty_file":
+            extra = DIMSEP_HEADERS.get(case["dimensional_separator"], [])
+            header = src_header + extra
+            rows = [row + [""] * len(extra) for row in sample_rows]
+            delimiter = FILE_DELIMITER.get(case["delimiter"], ",")
+            writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
+            writer.writerow(header)
+            writer.writerows(rows)
+    return test_csv
 
-        # Extract the configuration number
-        config_num_match = re.search(r'Configuration #(\d+):', config)
-        if not config_num_match:
-            continue
-        config_num = config_num_match.group(1)
+def run_acts_tests(acts_file, input_csv, csv2json):
+    acts_output = read_test_file(acts_file)
+    header, rows = read_source_csv(input_csv)
+
+    # turn the test file into list of test cases
+    lines = [l for l in acts_output.splitlines() if l.strip() and not l.startswith("#")]
+    cases = list(csv.DictReader(lines))
+
+    counts = {}
+    for n, case in enumerate(cases, start=1):
+        shutil.rmtree(OUT_DIR, ignore_errors=True)
+        os.makedirs(OUT_DIR)
+
+        #pick random sample of rows for this test case
+        random.seed(n)  # For reproducible results
+        sample_rows = random.sample(rows, min(SAMPLE_ROWS, len(rows)))
+        test_file = write_sample_csv(case, TEST_CSV, header, sample_rows)
 
         # Initialize the base command
         cmd = [csv2json]
 
-        # Parse the parameter lines for this configuration
-        for line in config.strip().split('\n'):
-            line = line.strip()
+        for param, values in FLAGS.items():
+            cmd += values.get(case[param], [])
+        cmd += ["--in", test_file]
 
-            # Look for lines formatted like "1 = OutputType=--out-dir temp.json"
-            if '=' in line and not line.startswith('Configuration'):
-                # Split at the first two equals signs
-                parts = line.split('=', 2)
-
-                if len(parts) >= 3:
-                    val = parts[2].strip()
-
-                    # Ignore 'null' values entirely
-                    if val != 'null':
-                        # shlex.split handles spaces in arguments correctly
-                        # e.g., turning "-D  -a" into ['-D', '-a']
-                        # or "--out-name {Index}-{User Id}" into ['--out-name', '{Index}-{User Id}']
-                        cmd.extend(shlex.split(val))
-
-        cmd.extend(["--in", input_csv])
-        print(f"=== Running Configuration #{config_num} ===")
+        print(f"========= Running Configuration #{n} =========")
         print(f"Executing: {' '.join(cmd)}")
 
         try:
-            # Execute the command with subprocess
-            result = subprocess.run(cmd, capture_output=True, text=True)
-
-            print(f"Return Code: {result.returncode}")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10,
+                                    encoding="utf-8", errors="replace")
 
             if result.stdout:
                 # Truncating stdout to 300 characters to prevent terminal flooding
@@ -74,16 +107,29 @@ def run_acts_tests(acts_file, input_csv, csv2json):
             if result.stderr:
                 print(f"Error Output:\n{result.stderr}")
 
+            if result.returncode == 101 or "panicked" in result.stderr:
+                verdict = "PANIC"
+            elif result.returncode != 0:
+                verdict = "ERROR"
+            else:
+                verdict = "OK"
+
+        except subprocess.TimeoutExpired:
+            verdict = "TIMEOUT"
         except Exception as e:
             print(f"An unexpected execution error occurred: {e}")
+            verdict = "EXCEPTION"
 
-        print("\n")
+        print(f"Verdict: {verdict}\n")
+        counts[verdict] = counts.get(verdict, 0) + 1
+
+    print("Summary:", counts)
 
 
 if __name__ == "__main__":
     # Target files stored as variables
     input_file = "people-10000.csv"
-    acts_file = "Simple testCase-nist.txt"
+    acts_file = "acts_out.csv"
 
     csv2json = find_csv2json()
     run_acts_tests(acts_file, input_file, csv2json)
