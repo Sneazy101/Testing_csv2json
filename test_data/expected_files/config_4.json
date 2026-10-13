@@ -1,0 +1,56 @@
+{
+  "age": [
+    "34",
+    "29",
+    "41",
+    "38"
+  ],
+  "department": [
+    "Engineering",
+    "Operations",
+    "Design",
+    "Legal"
+  ],
+  "id": [
+    "1",
+    "2",
+    "3",
+    "6"
+  ],
+  "is_active": [
+    "true",
+    "false",
+    "true",
+    "false"
+  ],
+  "name": [
+    {
+      "first": "Daniel",
+      "last": "Mason",
+      "list": {
+        "1": "Dan",
+        "2": "Danny"
+      }
+    },
+    {
+      "first": "Sarah",
+      "last": "Connor",
+      "list": {
+        "1": "Sallie"
+      }
+    },
+    {
+      "first": "Alex",
+      "last": "Rios",
+      "list": {
+        "1": "Lex",
+        "2": "Al"
+      }
+    },
+    {
+      "first": "Jordan",
+      "last": "Taylor",
+      "list": {}
+    }
+  ]
+}

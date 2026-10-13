@@ -1,0 +1,4 @@
+{"age":"34","department":"Engineering","id":"1","is_active":"true","name":{"first":"Daniel","last":"Mason","list":{"1":"Dan","2":"Danny"}}}
+{"age":"29","department":"Operations","id":"2","is_active":"false","name":{"first":"Sarah","last":"Connor","list":{"1":"Sallie","2":""}}}
+{"age":"41","department":"Design","id":"3","is_active":"true","name":{"first":"Alex","last":"Rios","list":{"1":"Lex","2":"Al"}}}
+{"age":"38","department":"Legal","id":"6","is_active":"false","name":{"first":"Jordan","last":"Taylor","list":{"1":"","2":""}}}

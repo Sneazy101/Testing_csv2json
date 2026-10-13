@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<System name="csv2json_tests">
+  <Parameters>
+    <Parameter id="0" name="delimiter" type="1">
+      <values>
+        <value>-d ':'</value>
+        <value>-d ';'</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="1" name="dimensionalSeparator" type="1">
+      <values>
+        <value>-D .</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="2" name="arrays" type="1">
+      <values>
+        <value>-a</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="3" name="removeEmptyStrings" type="1">
+      <values>
+        <value>--remove-empty-strings</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="4" name="removeEmptyObjects" type="1">
+      <values>
+        <value>--remove-empty-objects</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="5" name="outputFormat" type="1">
+      <values>
+        <value>--fold</value>
+        <value>--jsonl</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="6" name="numeric" type="1">
+      <values>
+        <value>null</value>
+        <value>--numeric id --numeric age</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="7" name="boolean" type="1">
+      <values>
+        <value>--boolean is_active</value>
+        <value>null</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+  </Parameters>
+  <OutputParameters />
+  <Relations />
+  <Constraints />
+  <Testset doi="2">
+    <Testcase TCNo="0">
+      <Value>1</Value>
+      <Value>-d ':'</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>--fold</Value>
+      <Value>--numeric id --numeric age</Value>
+      <Value>null</Value>
+    </Testcase>
+    <Testcase TCNo="1">
+      <Value>2</Value>
+      <Value>-d ':'</Value>
+      <Value>-D .</Value>
+      <Value>-a</Value>
+      <Value>--remove-empty-strings</Value>
+      <Value>--remove-empty-objects</Value>
+      <Value>--jsonl</Value>
+      <Value>null</Value>
+      <Value>--boolean is_active</Value>
+    </Testcase>
+    <Testcase TCNo="2">
+      <Value>3</Value>
+      <Value>-d ':'</Value>
+      <Value>null</Value>
+      <Value>-a</Value>
+      <Value>null</Value>
+      <Value>--remove-empty-objects</Value>
+      <Value>null</Value>
+      <Value>--numeric id --numeric age</Value>
+      <Value>--boolean is_active</Value>
+    </Testcase>
+    <Testcase TCNo="3">
+      <Value>4</Value>
+      <Value>-d ';'</Value>
+      <Value>-D .</Value>
+      <Value>null</Value>
+      <Value>--remove-empty-strings</Value>
+      <Value>null</Value>
+      <Value>--fold</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+    </Testcase>
+    <Testcase TCNo="4">
+      <Value>5</Value>
+      <Value>-d ';'</Value>
+      <Value>null</Value>
+      <Value>-a</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>--jsonl</Value>
+      <Value>--numeric id --numeric age</Value>
+      <Value>--boolean is_active</Value>
+    </Testcase>
+    <Testcase TCNo="5">
+      <Value>6</Value>
+      <Value>-d ';'</Value>
+      <Value>-D .</Value>
+      <Value>null</Value>
+      <Value>--remove-empty-strings</Value>
+      <Value>--remove-empty-objects</Value>
+      <Value>null</Value>
+      <Value>--numeric id --numeric age</Value>
+      <Value>null</Value>
+    </Testcase>
+    <Testcase TCNo="6">
+      <Value>7</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>-a</Value>
+      <Value>--remove-empty-strings</Value>
+      <Value>--remove-empty-objects</Value>
+      <Value>--fold</Value>
+      <Value>null</Value>
+      <Value>--boolean is_active</Value>
+    </Testcase>
+    <Testcase TCNo="7">
+      <Value>8</Value>
+      <Value>null</Value>
+      <Value>-D .</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>--jsonl</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+    </Testcase>
+    <Testcase TCNo="8">
+      <Value>9</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>--numeric id --numeric age</Value>
+      <Value>--boolean is_active</Value>
+    </Testcase>
+    <Testcase TCNo="9">
+      <Value>10</Value>
+      <Value>-d ';'</Value>
+      <Value>null</Value>
+      <Value>-a</Value>
+      <Value>null</Value>
+      <Value>--remove-empty-objects</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+      <Value>null</Value>
+    </Testcase>
+  </Testset>
+  <Header>
+    <Value />
+    <Value>delimiter</Value>
+    <Value>dimensionalSeparator</Value>
+    <Value>arrays</Value>
+    <Value>removeEmptyStrings</Value>
+    <Value>removeEmptyObjects</Value>
+    <Value>outputFormat</Value>
+    <Value>numeric</Value>
+    <Value>boolean</Value>
+  </Header>
+  <Stat-Data>
+    <ExecutionTime>0.002</ExecutionTime>
+    <MaxDomainSize>3</MaxDomainSize>
+    <MinDomainSize>2</MinDomainSize>
+    <TotalNoOfCombination>141</TotalNoOfCombination>
+    <TotalNoOfTests>10</TotalNoOfTests>
+    <Algorithm>IPOG</Algorithm>
+  </Stat-Data>
+</System>
+

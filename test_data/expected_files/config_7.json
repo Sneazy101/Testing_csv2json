@@ -1,0 +1,50 @@
+{
+  "age": [
+    "34",
+    "29",
+    "41",
+    "38"
+  ],
+  "department": [
+    "Engineering",
+    "Operations",
+    "Design",
+    "Legal"
+  ],
+  "id": [
+    "1",
+    "2",
+    "3",
+    "6"
+  ],
+  "is_active": [
+    true,
+    false,
+    true,
+    false
+  ],
+  "name.first": [
+    "Daniel",
+    "Sarah",
+    "Alex",
+    "Jordan"
+  ],
+  "name.last": [
+    "Mason",
+    "Connor",
+    "Rios",
+    "Taylor"
+  ],
+  "name.list.1": [
+    "Dan",
+    "Sallie",
+    "Lex",
+    null
+  ],
+  "name.list.2": [
+    "Danny",
+    null,
+    "Al",
+    null
+  ]
+}
