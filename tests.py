@@ -4,6 +4,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import os
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -81,9 +82,9 @@ def run_acts_tests(acts_file_name, csv2json_bin):
     passed_count = 0
     total_tests = 0
 
-    for config in configs:
-        if "Configuration #" not in config:
-            continue
+        for config in configs:
+            if "Configuration #" not in config:
+                continue
 
         config_num_match = re.search(r"Configuration #(\d+):", config)
         if not config_num_match:

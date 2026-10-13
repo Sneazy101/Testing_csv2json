@@ -80,9 +80,106 @@ A JSON value MUST be an object, array, number, or string, or one of
       true
 
 ## Input Space Partitioning
+### Component and input identification
 
-It takes in a `CSV` (Comma Separated Value) file and optional flags and options:
+`csv2json` takes in a `CSV` (Comma Separated Value) file and optional flags and options:
 ```
 $ csv2json --in <csv file> > <json file>
 ```
-and outputs a formatted `JSON` file.
+and outputs a formatted `JSON` file. The parameters are as follows:
+```
+--delimiter (-d): Changes the CSV splitting character.
+
+--dimensional-separator (-D): Creates nested JSON objects based on header syntax.
+
+--arrays (-a): Breaks comma-separated string values into JSON arrays.
+
+--remove-empty-strings: Strips empty string keys.
+
+--remove-empty-objects: Strips empty JSON nodes.
+
+--fold (-F): Folds row-by-row objects into a single object of arrays.
+
+--jsonl: Outputs newline-delimited JSON Lines instead of a standard JSON array.
+```
+### Characteristics for partitioning the input space
+To model this for combinatorial testing, we first partition the input domain into characteristics and mutually exclusive blocks (levels).
+
+#### *Characteristic 1: Input File State*
+
+Blocks: 
+- Valid Data
+- Empty File
+- Malformed CSV (e.g., unmatched quotes).
+- Header only, missing file
+
+#### *Characteristic 2: Delimiter Option (`--delimiter`, `-d`)*
+
+Blocks:
+- Default (Comma)
+- Custom (e.g., `‘;’` or `‘:’`).
+<br>
+Possible edge:
+- Empty value
+- Multiple characters
+- Delimiter inside quotes
+- Different character from in file
+
+#### *Characteristic 3: Dimensional Separator (`-D`)*
+
+Blocks: 
+- None (Default)
+- Custom (e.g., Dot .)
+- Multidimensional (ex. `a.b.c`)
+- Incorrect formats (`.a`, `a.`, `a..b`)  
+- Conflicting keys (`a` & `a.b` in same header)
+
+#### *Characteristic 4: Array Processing (`--arrays` or `-a` with `-D` to break items to arrays)*
+
+Blocks: Enabled, Disabled.
+<br>
+Edge: use without `-D`
+
+#### *Characteristic 5: Output Formatting (Mutually Exclusive)*
+
+Blocks: 
+- Standard JSON
+- Folded (`-F`)
+- JSONL (`--jsonl`)
+<br>
+Possible edge:                  
+both `-F` and `–jsonl` together
+
+#### *Characteristic 6: Remove empty strings/objects (`--remove-empty-strings`, `–-remove-empty-objects`)*
+Blocks: 
+- Use remove empty strings only
+- Use remove empty blocks only
+- Use none
+- Use both
+Both commands happen to both arrays and objects (warned there may be undesired effects)
+Empty rows, partially empty rows 
+
+#### *Characteristic 7: output destination (`--out-dir`, `-–out-name`)*
+Blocks: 
+- Default (stdout)
+- `–out-dir`,
+- `–out-dir` with `–out-name`
+<br>
+Possible edge: 
+- Missing directory value
+- Directory doesn’t exist
+- Duplicate file name exists
+
+#### *Characteristic 8: Column type conversion (`--boolean`, `–numeric`)*
+Blocks: 
+- None
+- `--numeric` only
+- `-–boolean`
+- both
+<br>
+Possible edge: 
+- Non-numeric in numeric column
+- Non-boolean in boolean column
+- Empty column
+
+
