@@ -1,0 +1,138 @@
+# ACTS Test Suite Generation: Tue Oct 13 03:03:35 PDT 2026
+#  "(don't care)" represents don't care value 
+# Degree of interaction coverage: 2
+# Number of parameters: 8
+# Maximum number of values per parameter: 3
+# Number of configurations: 10
+------------Test Cases--------------
+
+Configuration #1:
+
+1 = delimiter=-d ':'
+2 = dimensionalSeparator=null
+3 = arrays=null
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=null
+6 = outputFormat=--fold
+7 = numeric=--numeric id --numeric age
+8 = boolean=null
+
+-------------------------------------
+
+Configuration #2:
+
+1 = delimiter=-d ':'
+2 = dimensionalSeparator=-D .
+3 = arrays=-a
+4 = removeEmptyStrings=--remove-empty-strings
+5 = removeEmptyObjects=--remove-empty-objects
+6 = outputFormat=--jsonl
+7 = numeric=null
+8 = boolean=--boolean is_active
+
+-------------------------------------
+
+Configuration #3:
+
+1 = delimiter=-d ':'
+2 = dimensionalSeparator=null
+3 = arrays=-a
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=--remove-empty-objects
+6 = outputFormat=null
+7 = numeric=--numeric id --numeric age
+8 = boolean=--boolean is_active
+
+-------------------------------------
+
+Configuration #4:
+
+1 = delimiter=-d ';'
+2 = dimensionalSeparator=-D .
+3 = arrays=null
+4 = removeEmptyStrings=--remove-empty-strings
+5 = removeEmptyObjects=null
+6 = outputFormat=--fold
+7 = numeric=null
+8 = boolean=null
+
+-------------------------------------
+
+Configuration #5:
+
+1 = delimiter=-d ';'
+2 = dimensionalSeparator=null
+3 = arrays=-a
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=null
+6 = outputFormat=--jsonl
+7 = numeric=--numeric id --numeric age
+8 = boolean=--boolean is_active
+
+-------------------------------------
+
+Configuration #6:
+
+1 = delimiter=-d ';'
+2 = dimensionalSeparator=-D .
+3 = arrays=null
+4 = removeEmptyStrings=--remove-empty-strings
+5 = removeEmptyObjects=--remove-empty-objects
+6 = outputFormat=null
+7 = numeric=--numeric id --numeric age
+8 = boolean=null
+
+-------------------------------------
+
+Configuration #7:
+
+1 = delimiter=null
+2 = dimensionalSeparator=null
+3 = arrays=-a
+4 = removeEmptyStrings=--remove-empty-strings
+5 = removeEmptyObjects=--remove-empty-objects
+6 = outputFormat=--fold
+7 = numeric=null
+8 = boolean=--boolean is_active
+
+-------------------------------------
+
+Configuration #8:
+
+1 = delimiter=null
+2 = dimensionalSeparator=-D .
+3 = arrays=null
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=null
+6 = outputFormat=--jsonl
+7 = numeric=null
+8 = boolean=null
+
+-------------------------------------
+
+Configuration #9:
+
+1 = delimiter=null
+2 = dimensionalSeparator=null
+3 = arrays=null
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=null
+6 = outputFormat=null
+7 = numeric=--numeric id --numeric age
+8 = boolean=--boolean is_active
+
+-------------------------------------
+
+Configuration #10:
+
+1 = delimiter=-d ';'
+2 = dimensionalSeparator=null
+3 = arrays=-a
+4 = removeEmptyStrings=null
+5 = removeEmptyObjects=--remove-empty-objects
+6 = outputFormat=null
+7 = numeric=null
+8 = boolean=null
+
+-------------------------------------
+

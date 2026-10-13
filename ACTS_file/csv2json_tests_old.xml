@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<System name="csv2json_tests">
+  <Parameters>
+    <Parameter id="0" name="array" type="1">
+      <values>
+        <value>--arrays</value>
+        <value>null</value>
+        <value>-d . -a</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="1" name="remove" type="1">
+      <values>
+        <value>--remove-empty-strings</value>
+        <value>--remove-empty-objects</value>
+        <value>null</value>
+        <value>--remove-empty-objects  ---remove-empty-strings</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="2" name="outputFormat" type="1">
+      <values>
+        <value>--fold</value>
+        <value>null</value>
+        <value>--jsonl</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+    <Parameter id="3" name="dataTypeFormat" type="1">
+      <values>
+        <value>null</value>
+        <value>--boolean is_active</value>
+        <value>--numeric id --numeric age</value>
+        <value>--numeric id --numeric age --boolean is_active</value>
+      </values>
+      <basechoices />
+      <invalidValues />
+    </Parameter>
+  </Parameters>
+  <OutputParameters />
+  <Relations />
+  <Constraints />
+</System>
+
