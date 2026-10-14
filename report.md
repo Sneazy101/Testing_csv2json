@@ -79,6 +79,15 @@ A JSON value MUST be an object, array, number, or string, or one of
       null
       true
 
+### Input and Output relationship + Corner Cases
+In addition to typical inputs, csv2json could encounter corner cases in the input that affect the JSON output, such as:
+
+      Empty file input: An Empty CSV file or files with only headers
+      Missing/Extra fields: More or less fields than the header specified
+      Empty values: Empty fields, partially or fully empty row
+      Array style headers: header such as name.first, name.last
+
+      
 ## Input Space Partitioning
 ### Component and input identification
 
@@ -108,7 +117,7 @@ To model this for combinatorial testing, we first partition the input domain int
 #### *Characteristic 1: Input File State*
 
 Blocks: 
-- Valid Data
+- Valid CSV Data
 - Empty File
 - Malformed CSV (e.g., unmatched quotes).
 - Header only, missing file
@@ -118,12 +127,6 @@ Blocks:
 Blocks:
 - Default (Comma)
 - Custom (e.g., `‘;’` or `‘:’`).
-<br>
-Possible edge:
-- Empty value
-- Multiple characters
-- Delimiter inside quotes
-- Different character from in file
 
 #### *Characteristic 3: Dimensional Separator (`-D`)*
 
@@ -137,8 +140,6 @@ Blocks:
 #### *Characteristic 4: Array Processing (`--arrays` or `-a` with `-D` to break items to arrays)*
 
 Blocks: Enabled, Disabled.
-<br>
-Edge: use without `-D`
 
 #### *Characteristic 5: Output Formatting (Mutually Exclusive)*
 
@@ -146,9 +147,6 @@ Blocks:
 - Standard JSON
 - Folded (`-F`)
 - JSONL (`--jsonl`)
-<br>
-Possible edge:                  
-both `-F` and `–jsonl` together
 
 #### *Characteristic 6: Remove empty strings/objects (`--remove-empty-strings`, `–-remove-empty-objects`)*
 Blocks: 
@@ -164,11 +162,6 @@ Blocks:
 - Default (stdout)
 - `–out-dir`,
 - `–out-dir` with `–out-name`
-<br>
-Possible edge: 
-- Missing directory value
-- Directory doesn’t exist
-- Duplicate file name exists
 
 #### *Characteristic 8: Column type conversion (`--boolean`, `–numeric`)*
 Blocks: 
@@ -176,10 +169,4 @@ Blocks:
 - `--numeric` only
 - `-–boolean`
 - both
-<br>
-Possible edge: 
-- Non-numeric in numeric column
-- Non-boolean in boolean column
-- Empty column
-
 
