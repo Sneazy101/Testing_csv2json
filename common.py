@@ -4,6 +4,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_DIR = SCRIPT_DIR / "test_data" / "test_files"
+ACTS_DIR = SCRIPT_DIR / "ACTS_config"
 EXPECTED_DIR = Path.cwd() / "test_data" / "expected_files"
 
 
@@ -21,6 +22,7 @@ def resolve_file(filename_primary, filename_fallback=None):
     candidates = [
         DATA_DIR / filename_primary,
         SCRIPT_DIR / filename_primary,
+        ACTS_DIR / filename_primary,
         Path.cwd() / filename_primary,
     ]
     if filename_fallback:
@@ -28,6 +30,7 @@ def resolve_file(filename_primary, filename_fallback=None):
             [
                 DATA_DIR / filename_fallback,
                 SCRIPT_DIR / filename_fallback,
+                ACTS_DIR / filename_primary,
                 Path.cwd() / filename_fallback,
             ]
         )
