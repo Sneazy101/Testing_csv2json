@@ -1,0 +1,8 @@
+id,name.first,name.last,name.list.1,name.list.2,age,department,is_active
+1,Daniel,Mason,Dan"ny,Danny,34,Engineering,true
+2,Sarah,"Connor"Jr.,Sallie,,29,Operations,false
+3,Alex,Rios,Lex,Al,41,"Design,true
+4,Morgan,Lee,Morg,,,30,,
+5,,,,,,25,Sales,true
+6,Jordan,Taylor,,,38,Legal,false
+7,,,,,,,,

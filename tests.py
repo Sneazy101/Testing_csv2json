@@ -19,7 +19,6 @@ def find_csv2json(override_path=None):
         )
     return path
 
-
 def resolve_file(filename_primary, filename_fallback=None):
     """Searches for a file in DATA_DIR, SCRIPT_DIR, and CWD."""
     candidates = [
@@ -155,12 +154,38 @@ def run_acts_tests(acts_file_name, csv2json_bin):
         except Exception:
             print("Failed")
 
-        print()
+    print(f"Combinotorial Tests Passed : {passed_count}/{total_tests}")
 
-    print(f"Total Tests Passed : {passed_count}/{total_tests}")
+def run_line_ending_test(csv2json_bin):
+    expected_path = Path.cwd() / "test_data" / "starter_files" / "test_data1.json"
+    if not expected_path.is_file():
+        expected_path = SCRIPT_DIR / "test_data" / "starter_files" / "test_data1.json"
 
+    expected = expected_path.read_text(encoding="utf-8")
+
+    test_files_dir = Path.cwd() / "test_data" / "test_files"
+    if not test_files_dir.is_dir():
+        test_files_dir = SCRIPT_DIR / "test_data" / "test_files"
+
+    for filename in ["test_data_n.csv", "test_data_rn.csv"]:
+        csv_file = test_files_dir / filename
+
+        res = subprocess.run(
+            [csv2json_bin, "--in", str(csv_file)],
+            capture_output=True,
+            text=True,
+        )
+
+        status = (
+            "Passed"
+            if res.returncode == 0 and res.stdout == expected
+            else "Failed"
+        )
+        print(f"{filename}: {status}")
 
 if __name__ == "__main__":
     acts_file = "csv2json_tests-nist.txt"
     csv2json_path = find_csv2json()
     run_acts_tests(acts_file, csv2json_path)
+
+    run_line_ending_test(csv2json_path)
