@@ -5,7 +5,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_DIR = SCRIPT_DIR / "test_data" / "test_files"
 ACTS_DIR = SCRIPT_DIR / "ACTS_config"
-EXPECTED_DIR = Path.cwd() / "test_data" / "expected_files"
+EXPECTED_DIR = Path.cwd() / "test_data" / "expected_output"
 
 
 def find_csv2json(override_path=None):

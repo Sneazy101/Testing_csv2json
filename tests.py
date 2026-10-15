@@ -17,8 +17,8 @@ def find_expected_file(config_num):
         EXPECTED_DIR / f"config_{config_num}.json",
         EXPECTED_DIR / f"{config_num}.json",
         EXPECTED_DIR / f"expected_{config_num}.txt",
-        SCRIPT_DIR / "test_data" / "expected_files" / f"expected_{config_num}.json",
-        SCRIPT_DIR / "test_data" / "expected_files" / f"{config_num}.json",
+        SCRIPT_DIR / "test_data" / "expected_output" / f"expected_{config_num}.json",
+        SCRIPT_DIR / "test_data" / "expected_output" / f"{config_num}.json",
     ]
     for path in candidates:
         if path.is_file():
@@ -73,55 +73,55 @@ def run_acts_tests(acts_file_name, csv2json_bin):
 
                     if val != "null":
                         cli_args.extend(shlex.split(val))
+        
+        if dialect_mode == 1:
+            input_csv = input_csv2
+        elif dialect_mode == 2:
+            input_csv = input_csv3
+        else:
+            input_csv = input_csv1
 
-            if dialect_mode == 1:
-                input_csv = input_csv2
-            elif dialect_mode == 2:
-                input_csv = input_csv3
+        csv_name = Path(input_csv).name
+        command_display = f"{' '.join(cli_args)} {csv_name}".strip()
+
+        total_tests += 1
+        print(f"Test # {config_num}")
+        print(f"command checked : {command_display}")
+
+        if not Path(input_csv).is_file():
+            print("Failed\n")
+            continue
+
+        expected_path = find_expected_file(config_num)
+        if not expected_path.is_file():
+            print("Failed\n")
+            continue
+
+        cmd = [csv2json_bin, "--in", input_csv] + cli_args
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, cwd=str(SCRIPT_DIR)
+            )
+
+            with open(expected_path, "r", encoding="utf-8") as f:
+                expected_output = f.read()
+
+            actual_output = result.stdout
+
+            # .strip() prevents newline discrepancies (\r\n vs \n) from triggering false negatives
+            if result.returncode == 0 and actual_output.strip() == expected_output.strip():
+                print("Passed")
+                passed_count += 1
             else:
-                input_csv = input_csv1
-
-            csv_name = Path(input_csv).name
-            command_display = f"{' '.join(cli_args)} {csv_name}".strip()
-
-            total_tests += 1
-            print(f"Test # {config_num}")
-            print(f"command checked : {command_display}")
-
-            if not Path(input_csv).is_file():
-                print("Failed\n")
-                continue
-
-            expected_path = find_expected_file(config_num)
-            if not expected_path.is_file():
-                print("Failed\n")
-                continue
-
-            cmd = [csv2json_bin, "--in", input_csv] + cli_args
-
-            try:
-                result = subprocess.run(
-                    cmd, capture_output=True, text=True, cwd=str(SCRIPT_DIR)
-                )
-
-                with open(expected_path, "r", encoding="utf-8") as f:
-                    expected_output = f.read()
-
-                actual_output = result.stdout
-
-                # .strip() prevents newline discrepancies (\r\n vs \n) from triggering false negatives
-                if result.returncode == 0 and actual_output.strip() == expected_output.strip():
-                    print("Passed")
-                    passed_count += 1
-                else:
-                    print("Failed")
-
-            except Exception:
                 print("Failed")
 
-            print()
+        except Exception:
+            print("Failed (exception)")
 
-        print(f"Total Tests Passed : {passed_count}/{total_tests}")
+        print()
+
+    print(f"Total Tests Passed : {passed_count}/{total_tests}")
 
 
 if __name__ == "__main__":

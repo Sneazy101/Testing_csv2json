@@ -182,4 +182,5 @@ Possible edge:
 - Non-boolean in boolean column
 - Empty column
 
+## Reflection
 
