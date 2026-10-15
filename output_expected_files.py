@@ -1,7 +1,5 @@
-import os
 import re
 import shlex
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -49,9 +47,9 @@ def run_acts_tests(acts_file_name, csv2json_bin):
 
     acts_file = resolve_file(acts_file_name)
     input_csv1 = resolve_file("test_data1.csv")
-    input_csv2 = resolve_file("test_data_dailect.csv", "test_data_dialect.csv")
+    input_csv2 = resolve_file("test_data_dialect.csv", "test_data_dialect.csv")
     input_csv3 = resolve_file(
-        "test_data_dailect_2.csv", "test_data_dialect_2.csv"
+        "test_data_dialect_2.csv", "test_data_dialect_2.csv"
     )
 
     # Pre-flight check

@@ -1,7 +1,5 @@
-import os
 import re
 import shlex
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -51,8 +49,8 @@ def find_expected_file(config_num):
         EXPECTED_DIR / f"config_{config_num}.json",
         EXPECTED_DIR / f"{config_num}.json",
         EXPECTED_DIR / f"expected_{config_num}.txt",
-        SCRIPT_DIR / "test_data" / "expected_files" / f"expected_{config_num}.json",
-        SCRIPT_DIR / "test_data" / "expected_files" / f"{config_num}.json",
+        SCRIPT_DIR / "test_data" / "expected_output" / f"expected_{config_num}.json",
+        SCRIPT_DIR / "test_data" / "expected_output" / f"{config_num}.json",
     ]
     for path in candidates:
         if path.is_file():
@@ -64,9 +62,9 @@ def find_expected_file(config_num):
 def run_acts_tests(acts_file_name, csv2json_bin):
     acts_file = resolve_file(acts_file_name)
     input_csv1 = resolve_file("test_data1.csv")
-    input_csv2 = resolve_file("test_data_dailect.csv", "test_data_dialect.csv")
+    input_csv2 = resolve_file("test_data_dialect.csv", "test_data_dialect.csv")
     input_csv3 = resolve_file(
-        "test_data_dailect_2.csv", "test_data_dialect_2.csv"
+        "test_data_dialect_2.csv", "test_data_dialect_2.csv"
     )
 
     try:
@@ -83,7 +81,6 @@ def run_acts_tests(acts_file_name, csv2json_bin):
     for config in configs:
         if "Configuration #" not in config:
             continue
-
         config_num_match = re.search(r"Configuration #(\d+):", config)
         if not config_num_match:
             continue
@@ -108,7 +105,7 @@ def run_acts_tests(acts_file_name, csv2json_bin):
 
                     if val != "null":
                         cli_args.extend(shlex.split(val))
-
+        
         if dialect_mode == 1:
             input_csv = input_csv2
         elif dialect_mode == 2:
@@ -153,7 +150,7 @@ test_data_rn.csv: Failed : The Program does not support line breaks for data_typ
                 print("Failed")
 
         except Exception:
-            print("Failed")
+            print("Failed (exception)")
 
     print(f"Combinotorial Tests Passed : {passed_count}/{total_tests}")
 

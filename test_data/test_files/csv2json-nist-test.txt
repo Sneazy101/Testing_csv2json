@@ -1,0 +1,118 @@
+# ACTS Test Suite Generation: Mon Oct 12 11:53:29 PDT 2026
+#  "(don't care)" represents don't care value 
+# Degree of interaction coverage: 2
+# Number of parameters: 6
+# Maximum number of values per parameter: 3
+# Number of configurations: 10
+------------Test Cases--------------
+
+Configuration #1:
+
+1 = input_file_stat=empty_file
+2 = dimensional_separator=-D .
+3 = array_processing=-a
+4 = remove_empty=null
+5 = output_dest=null
+6 = type_conversion=--numeric
+
+-------------------------------------
+
+Configuration #2:
+
+1 = input_file_stat=valid_data
+2 = dimensional_separator=null
+3 = array_processing=null
+4 = remove_empty=null
+5 = output_dest=--out-dir temp
+6 = type_conversion=--boolean
+
+-------------------------------------
+
+Configuration #3:
+
+1 = input_file_stat=empty_file
+2 = dimensional_separator=null
+3 = array_processing=-a
+4 = remove_empty=null
+5 = output_dest=--out-dir temp --out-name result
+6 = type_conversion=null
+
+-------------------------------------
+
+Configuration #4:
+
+1 = input_file_stat=valid_data
+2 = dimensional_separator=-D .
+3 = array_processing=null
+4 = remove_empty=--remove-empty-strings
+5 = output_dest=null
+6 = type_conversion=--boolean
+
+-------------------------------------
+
+Configuration #5:
+
+1 = input_file_stat=empty_file
+2 = dimensional_separator=-D .
+3 = array_processing=-a
+4 = remove_empty=--remove-empty-strings
+5 = output_dest=--out-dir temp
+6 = type_conversion=null
+
+-------------------------------------
+
+Configuration #6:
+
+1 = input_file_stat=valid_data
+2 = dimensional_separator=null
+3 = array_processing=null
+4 = remove_empty=--remove-empty-strings
+5 = output_dest=--out-dir temp --out-name result
+6 = type_conversion=--numeric
+
+-------------------------------------
+
+Configuration #7:
+
+1 = input_file_stat=valid_data
+2 = dimensional_separator=null
+3 = array_processing=-a
+4 = remove_empty=--remove-empty-objects
+5 = output_dest=null
+6 = type_conversion=null
+
+-------------------------------------
+
+Configuration #8:
+
+1 = input_file_stat=empty_file
+2 = dimensional_separator=-D .
+3 = array_processing=null
+4 = remove_empty=--remove-empty-objects
+5 = output_dest=--out-dir temp
+6 = type_conversion=--numeric
+
+-------------------------------------
+
+Configuration #9:
+
+1 = input_file_stat=empty_file
+2 = dimensional_separator=-D .
+3 = array_processing=-a
+4 = remove_empty=--remove-empty-objects
+5 = output_dest=--out-dir temp --out-name result
+6 = type_conversion=--boolean
+
+-------------------------------------
+
+Configuration #10:
+
+1 = input_file_stat=valid_data
+2 = dimensional_separator=-D .
+3 = array_processing=null
+4 = remove_empty=null
+5 = output_dest=--out-dir temp
+6 = type_conversion=null
+
+-------------------------------------
+

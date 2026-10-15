@@ -1,6 +1,14 @@
 # Testing with input space partitioning
 We are testing a `csv2json` program written in Rust that we found on [GitHub](https://github.com/benkay86/csv2json)
+
+To install the program, run the following command:
+
+      RUSTFLAGS="-A dangerous_implicit_autorefs" cargo install --git https://github.com/benkay86/csv2json.git --force
+
+**Note:** using the default installation doesn't include all the parameters listed on the programs README.
+
 ## Specification of the Program Under Test
+  
 `CSV` (Comma Separated Values) files are used for representing data in spreadsheet programs. According to [RFC 4180](https://www.rfc-editor.org/info/rfc4180/#section-2):
 1.  Each record is located on a separate line, delimited by a line
        break (CRLF).  For example:
@@ -79,10 +87,114 @@ A JSON value MUST be an object, array, number, or string, or one of
       null
       true
 
-## Input Space Partitioning
+### Input and Output relationship + Corner Cases
+In addition to typical inputs, csv2json could encounter corner cases in the input that affect the JSON output, such as:
 
-It takes in a `CSV` (Comma Separated Value) file and optional flags and options:
+      Empty file input: An Empty CSV file or files with only headers
+
+      Missing/Extra fields: More or less fields than the header specified
+
+      Empty values: Empty fields, partially or fully empty row
+
+      Array style headers: header such as name.first, name.last
+
+      
+## Input Space Partitioning
+### Component and input identification
+
+`csv2json` takes in a `CSV` (Comma Separated Value) file and optional flags and options:
 ```
 $ csv2json --in <csv file> > <json file>
 ```
-and outputs a formatted `JSON` file.
+and outputs a formatted `JSON` file. The parameters are as follows:
+```
+--delimiter (-d): Changes the CSV splitting character.
+
+--dimensional-separator (-D): Creates nested JSON objects based on header syntax.
+
+--arrays (-a): Breaks comma-separated string values into JSON arrays.
+
+--remove-empty-strings: Strips empty string keys.
+
+--remove-empty-objects: Strips empty JSON nodes.
+
+--fold (-F): Folds row-by-row objects into a single object of arrays.
+
+--jsonl: Outputs newline-delimited JSON Lines instead of a standard JSON array.
+```
+### Characteristics for partitioning the input space
+To model this for combinatorial testing, we first partition the input domain into characteristics and mutually exclusive blocks (levels).
+
+#### *Characteristic 1: Input File State*
+
+Blocks: 
+- Valid CSV Data
+- Empty File
+- Malformed CSV (e.g., unmatched quotes).
+- Header only, missing file
+
+#### *Characteristic 2: Delimiter Option (`--delimiter`, `-d`)*
+
+Blocks:
+- Default (Comma)
+- Custom (e.g., `‘;’` or `‘:’`).
+
+#### *Characteristic 3: Dimensional Separator (`-D`)*
+
+Blocks: 
+- None (Default)
+- Custom (e.g., Dot .)
+- Multidimensional (ex. `a.b.c`)
+- Incorrect formats (`.a`, `a.`, `a..b`)  
+- Conflicting keys (`a` & `a.b` in same header)
+
+#### *Characteristic 4: Array Processing (`--arrays` or `-a` with `-D` to break items to arrays)*
+
+Blocks: Enabled, Disabled.
+
+#### *Characteristic 5: Output Formatting (Mutually Exclusive)*
+
+Blocks: 
+- Standard JSON
+- Folded (`-F`)
+- JSONL (`--jsonl`)
+
+#### *Characteristic 6: Remove empty strings/objects (`--remove-empty-strings`, `–-remove-empty-objects`)*
+Blocks: 
+- Use remove empty strings only
+- Use remove empty blocks only
+- Use none
+- Use both
+Both commands happen to both arrays and objects (warned there may be undesired effects)
+Empty rows, partially empty rows 
+
+#### *Characteristic 7: output destination (`--out-dir`, `-–out-name`)*
+Blocks: 
+- Default (stdout)
+- `–out-dir`,
+- `–out-dir` with `–out-name`
+
+#### *Characteristic 8: Column type conversion (`--boolean`, `–numeric`)*
+Blocks: 
+- None
+- `--numeric` only
+- `-–boolean`
+- both
+
+## Combinatorial Test Generation using ACTS
+We generated a suite of 10 tests with 8 parameters each using ACTS, which all passed. Given our 8 parameters and the number of values they can take, had we not used pairwise testing we would've generated: $2^6\times3^2 = 576$ tests
+
+Some combinations in our suite are never run. For example, the triple (`-a`, `-D .`, `--fold`) never appears: Configuration 2 has `-a` and `-D .` but uses `--jsonl`, Configuration 4 has `-D` . and `--fold` but no `-a`, and Configuration 7 has `-a` and `--fold` but no `-D`. If the program mishandles array syntax only when dimensional separators produce nested objects and output is folded, we would miss it.
+
+The implication is that pairwise testing is efficient at catching bugs caused by one or two options, which [empirical studies](https://youtu.be/vbXzLohMcQI?t=683) suggest are the majority, but it trades away confidence in rarer multi-option bugs. For a tool with this many interacting flags, we judged that 10 tests instead of 576 was a reasonable cost-benefit tradeoff, and if a failure appears we could add targeted 3-way tests around it.
+
+## Reflection
+
+#### What was easy?
+Deciding on the input space partition for our tests was made easier due to the detailed README of the csv2json program which explained each parameter and grouped them together in some instances as well. Following the creation of our input space partition, we were also able to quickly create the ACTS test suite with the help of the User manual which was very straightforward and simple to follow. With the tests given to us, being able to read through the README and decide on the expected output was another rather easier task. Since the README is filled with examples, it was much a good guide to write out our own outputs.
+
+#### What was difficult
+We had some difficulty figuring out the corner cases since we had some confusion on whether we needed corner cases on the input CSV data, or the command line options. Another part we struggled with is deciding on a good test suite because we weren't sure on how many tests would be good enough to cover the input space given that we had a very little number of tests generated from ACTS. One of the most difficult parts was writing the python test program and incoporating the ACTS output to it. There were multiple parts of the test code which we struggled with such as incorporating the ACTS output to test and running csv2json with the specified parameters.
+
+#### What did you feel would have made your experience easier at a technical level?
+It would have been helpful to have some more guidance around implementing the test program since we were new to a lot of aspects in this exercise. Also some kind of restriction or guide to how complex/simple our tests should be.

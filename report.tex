@@ -1,0 +1,361 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{Testing with input space
+partitioning}\label{testing-with-input-space-partitioning}
+
+We are testing a \texttt{csv2json} program written in Rust that we found
+on \href{https://github.com/benkay86/csv2json}{GitHub}
+\subsection{Specification of the Program Under Test}
+\texttt{CSV} (Comma Separated
+Values) files are used for representing data in spreadsheet programs.
+According to
+\href{https://www.rfc-editor.org/info/rfc4180/\#section-2}{RFC 4180}: 1.
+Each record is located on a separate line, delimited by a line break
+(CRLF). For example:
+
+\begin{quote}
+\begin{verbatim}
+ aaa,bbb,ccc CRLF
+ zzz,yyy,xxx CRLF
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  The last record in the file may or may not have an ending line break.
+  For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  aaa,bbb,ccc CRLF
+  zzz,yyy,xxx
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  There maybe an optional header line appearing as the first line of the
+  file with the same format as normal record lines. This header will
+  contain names corresponding to the fields in the file and should
+  contain the same number of fields as the records in the rest of the
+  file (the presence or absence of the header line should be indicated
+  via the optional ``header'' parameter of this MIME type). For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  field_name,field_name,field_name CRLF
+  aaa,bbb,ccc CRLF
+  zzz,yyy,xxx CRLF
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Within the header and each record, there may be one or more fields,
+  separated by commas. Each line should contain the same number of
+  fields throughout the file. Spaces are considered part of a field and
+  should not be ignored. The last field in the record must not be
+  followed by a comma. For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  aaa,bbb,ccc
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Each field may or may not be enclosed in double quotes (however some
+  programs, such as Microsoft Excel, do not use double quotes at all).
+  If fields are not enclosed with double quotes, then double quotes may
+  not appear inside the fields. For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  "aaa","bbb","ccc" CRLF
+  zzz,yyy,xxx
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Fields containing line breaks (CRLF), double quotes, and commas should
+  be enclosed in double-quotes. For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  "aaa","b CRLF
+  bb","ccc" CRLF
+  zzz,yyy,xxx
+\end{verbatim}
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  If double-quotes are used to enclose fields, then a double-quote
+  appearing inside a field must be escaped by preceding it with another
+  double quote. For example:
+\end{enumerate}
+
+\begin{quote}
+\begin{verbatim}
+  "aaa","b""bb","ccc"
+\end{verbatim}
+
+\mbox{}%
+\subsection{}\label{section}
+
+\texttt{JSON} (JavaScript Object Notation) files are a commonly used
+serialized data exchange format over the internet.
+\href{https://www.rfc-editor.org/info/rfc8259/\#section-1}{RFC 8259}
+defines it as: A JSON text is a sequence of tokens. The set of tokens
+includes six structural characters, strings, numbers, and three literal
+names.
+\end{quote}
+
+These are the six structural characters:
+
+\begin{verbatim}
+  begin-array     = ws %x5B ws  ; [ left square bracket
+
+  begin-object    = ws %x7B ws  ; { left curly bracket
+
+  end-array       = ws %x5D ws  ; ] right square bracket
+
+  end-object      = ws %x7D ws  ; } right curly bracket
+
+  name-separator  = ws %x3A ws  ; : colon
+
+  value-separator = ws %x2C ws  ; , comma
+\end{verbatim}
+
+A JSON value MUST be an object, array, number, or string, or one of the
+following three literal names:
+
+\begin{verbatim}
+  false
+  null
+  true
+\end{verbatim}
+
+\subsubsection{Input and Output relationship + Corner
+Cases}\label{input-and-output-relationship-corner-cases}
+
+In addition to typical inputs, csv2json could encounter corner cases in
+the input that affect the JSON output, such as:
+
+\begin{verbatim}
+  Empty file input: An Empty CSV file or files with only headers
+  Missing/Extra fields: More or less fields than the header specified
+  Empty values: Empty fields, partially or fully empty row
+  Array style headers: header such as name.first, name.last
+\end{verbatim}
+
+\subsection{Input Space Partitioning}\label{input-space-partitioning}
+
+\subsubsection{Component and input
+identification}\label{component-and-input-identification}
+
+\texttt{csv2json} takes in a \texttt{CSV} (Comma Separated Value) file
+and optional flags and options:
+
+\begin{verbatim}
+$ csv2json --in <csv file> > <json file>
+\end{verbatim}
+
+and outputs a formatted \texttt{JSON} file. The parameters are as
+follows:
+
+\begin{verbatim}
+--delimiter (-d): Changes the CSV splitting character.
+
+--dimensional-separator (-D): Creates nested JSON objects based on header syntax.
+
+--arrays (-a): Breaks comma-separated string values into JSON arrays.
+
+--remove-empty-strings: Strips empty string keys.
+
+--remove-empty-objects: Strips empty JSON nodes.
+
+--fold (-F): Folds row-by-row objects into a single object of arrays.
+
+--jsonl: Outputs newline-delimited JSON Lines instead of a standard JSON array.
+\end{verbatim}
+
+\subsubsection{Characteristics for partitioning the input
+space}\label{characteristics-for-partitioning-the-input-space}
+
+To model this for combinatorial testing, we first partition the input
+domain into characteristics and mutually exclusive blocks (levels).
+
+\paragraph{\texorpdfstring{\emph{Characteristic 1: Input File
+State}}{Characteristic 1: Input File State}}\label{characteristic-1-input-file-state}
+
+Blocks:
+\begin{itemize}
+  \item Valid CSV Data
+  \item Empty File
+  \item Malformed CSV (e.g., unmatched
+  quotes).
+  \item Header only, missing file
+\end{itemize}
+\paragraph{\texorpdfstring{\emph{Characteristic 2: Delimiter Option
+(\texttt{-\/-delimiter},
+\texttt{-d})}}{Characteristic 2: Delimiter Option (-\/-delimiter,
+\itemd)}}\label{characteristic-2-delimiter-option---delimiter--d}
+
+Blocks:
+\begin{itemize}
+\item Default (Comma)
+\item Custom (e.g., \texttt{‘;’} or \texttt{‘:’}).
+\end{itemize}
+
+\paragraph{\texorpdfstring{\emph{Characteristic 3: Dimensional Separator
+(\texttt{-D})}}{Characteristic 3: Dimensional Separator (-D)}}\label{characteristic-3-dimensional-separator--d}
+
+Blocks:
+\begin{itemize}
+  \item None (Default)
+  \item Custom (e.g., Dot .)
+  \item Multidimensional (ex. \texttt{a.b.c})
+  \item Incorrect formats (\texttt{.a}, \texttt{a.}, \texttt{a..b})
+  \item Conflicting keys (\texttt{a} \& \texttt{a.b} in same header)
+\end{itemize}
+
+\paragraph{\texorpdfstring{\emph{Characteristic 4: Array Processing
+(\texttt{-\/-arrays} or \texttt{-a} with \texttt{-D} to break items to
+arrays)}}{Characteristic 4: Array Processing (-\/-arrays or
+\itema with
+\itemD to break items to arrays)}}\label{characteristic-4-array-processing---arrays-or--a-with--d-to-break-items-to-arrays}
+
+Blocks: Enabled, Disabled.
+
+\paragraph{\texorpdfstring{\emph{Characteristic 5: Output Formatting
+(Mutually
+Exclusive)}}{Characteristic 5: Output Formatting (Mutually Exclusive)}}\label{characteristic-5-output-formatting-mutually-exclusive}
+
+Blocks:
+\begin{itemize}
+  \item Standard JSON
+  \item Folded (\texttt{-F})
+  \item JSONL
+  (\texttt{-\/-jsonl})
+\end{itemize}
+
+\paragraph{\texorpdfstring{\emph{Characteristic 6: Remove empty
+strings/objects (\texttt{-\/-remove-empty-strings},
+\texttt{–-remove-empty-objects})}}{Characteristic 6: Remove empty strings/objects (-\/-remove-empty-strings,
+\item--remove-empty-objects)}}\label{characteristic-6-remove-empty-stringsobjects---remove-empty-strings--remove-empty-objects}
+
+Blocks:
+\begin{itemize}
+  \item Use remove empty strings only
+  \item Use remove empty blocks only
+  \item Use none
+  \item Use both Both commands happen to both arrays and objects
+  (warned there may be undesired effects) Empty rows, partially empty rows
+\end{itemize}
+
+\paragraph{\texorpdfstring{\emph{Characteristic 7: output destination
+(\texttt{-\/-out-dir},
+\texttt{-–out-name})}}{Characteristic 7: output destination (-\/-out-dir,
+\item\/--out-name)}}\label{characteristic-7-output-destination---out-dir--out-name}
+
+Blocks:
+\begin{itemize}
+  \item Default (stdout)
+  \item \texttt{–out-dir},
+  \item \texttt{–out-dir} with \texttt{–out-name}
+\end{itemize}
+
+\paragraph{\texorpdfstring{\emph{Characteristic 8: Column type
+conversion (\texttt{-\/-boolean},
+\texttt{–numeric})}}{Characteristic 8: Column type conversion (-\/-boolean,
+\item-numeric)}}\label{characteristic-8-column-type-conversion---boolean-numeric}
+
+Blocks:
+\begin{itemize}
+  \item None
+  \item \texttt{-\/-numeric} only
+  \item \texttt{-–boolean}
+  \item both
+\end{itemize}
+\end{document}
