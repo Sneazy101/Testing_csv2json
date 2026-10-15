@@ -1,5 +1,12 @@
 # Testing with input space partitioning
 We are testing a `csv2json` program written in Rust that we found on [GitHub](https://github.com/benkay86/csv2json)
+
+To install the program, run the following command:
+
+      RUSTFLAGS="-A dangerous_implicit_autorefs" cargo install --git https://github.com/benkay86/csv2json.git --force
+
+**Note:** using the default installation doesn't include all the parameters listed on the programs README.
+
 ## Specification of the Program Under Test
 `CSV` (Comma Separated Values) files are used for representing data in spreadsheet programs. According to [RFC 4180](https://www.rfc-editor.org/info/rfc4180/#section-2):
 1.  Each record is located on a separate line, delimited by a line
@@ -83,8 +90,11 @@ A JSON value MUST be an object, array, number, or string, or one of
 In addition to typical inputs, csv2json could encounter corner cases in the input that affect the JSON output, such as:
 
       Empty file input: An Empty CSV file or files with only headers
+
       Missing/Extra fields: More or less fields than the header specified
+
       Empty values: Empty fields, partially or fully empty row
+
       Array style headers: header such as name.first, name.last
 
       
