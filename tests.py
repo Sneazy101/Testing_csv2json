@@ -140,7 +140,8 @@ def run_acts_tests(acts_file_name, csv2json_bin):
             )
 
             with open(expected_path, "r", encoding="utf-8") as f:
-                expected_output = f.read()
+                expected_output = test_data_n.csv: Failed : The Program does not support line breaks for data_type intest_data_n.csv
+test_data_rn.csv: Failed : The Program does not support line breaks for data_type intest_data_rn.csvf.read()
 
             actual_output = result.stdout
 
@@ -179,13 +180,55 @@ def run_line_ending_test(csv2json_bin):
         status = (
             "Passed"
             if res.returncode == 0 and res.stdout == expected
-            else "Failed"
+    else "Failed : The Program does not support line breaks for data_type in" + filename
         )
         print(f"{filename}: {status}")
+
+def run_file_output_test(csv2json_bin):
+    """Tests if csv2json generates file output using --out-dir and matches test_data1.json."""
+    input_csv = Path(resolve_file("test_data1.csv"))
+
+    # Output directory where csv2json will place the generated JSON
+    output_dir = DATA_DIR
+    generated_json = output_dir / "test_data1.json"
+
+    # Expected baseline file
+    expected_path = Path.cwd() / "test_data" / "starter_files" / "test_data1.json"
+    if not expected_path.is_file():
+        expected_path = SCRIPT_DIR / "test_data" / "starter_files" / "test_data1.json"
+
+    expected_content = expected_path.read_text(encoding="utf-8")
+
+    # Remove any pre-existing output file before running
+    if generated_json.is_file():
+        generated_json.unlink()
+
+    # Pass --out-dir with the DIRECTORY path, not a filename
+    res = subprocess.run(
+        [csv2json_bin, "--in", str(input_csv), "--out-dir", str(output_dir)],
+        capture_output=True,
+        text=True,
+        cwd=str(SCRIPT_DIR),
+    )
+
+    if not generated_json.is_file():
+        print(f"test_data1.json: Failed (File was not created in {output_dir})")
+        if res.stderr.strip():
+            print(f"  Error: {res.stderr.strip()}")
+        return
+
+    actual_content = generated_json.read_text(encoding="utf-8")
+    status = (
+        "Passed"
+        if res.returncode == 0
+        and actual_content.strip() == expected_content.strip()
+        else "Failed"
+    )
+    print(f"Test for file output (file output): {status}")
 
 if __name__ == "__main__":
     acts_file = "csv2json_tests-nist.txt"
     csv2json_path = find_csv2json()
     run_acts_tests(acts_file, csv2json_path)
-
     run_line_ending_test(csv2json_path)
+    run_file_output_test(csv2json_path)
