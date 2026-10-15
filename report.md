@@ -188,3 +188,13 @@ Some combinations in our suite are never run. For example, the triple (`-a`, `-D
 
 The implication is that pairwise testing is efficient at catching bugs caused by one or two options, which [empirical studies](https://youtu.be/vbXzLohMcQI?t=683) suggest are the majority, but it trades away confidence in rarer multi-option bugs. For a tool with this many interacting flags, we judged that 10 tests instead of 576 was a reasonable cost-benefit tradeoff, and if a failure appears we could add targeted 3-way tests around it.
 
+## Reflection
+
+#### What was easy?
+Deciding on the input space partition for our tests was made easier due to the detailed README of the csv2json program which explained each parameter and grouped them together in some instances as well. Following the creation of our input space partition, we were also able to quickly create the ACTS test suite with the help of the User manual which was very straightforward and simple to follow. With the tests given to us, being able to read through the README and decide on the expected output was another rather easier task. Since the README is filled with examples, it was much a good guide to write out our own outputs.
+
+#### What was difficult
+We had some difficulty figuring out the corner cases since we had some confusion on whether we needed corner cases on the input CSV data, or the command line options. Another part we struggled with is deciding on a good test suite because we weren't sure on how many tests would be good enough to cover the input space given that we had a very little number of tests generated from ACTS. One of the most difficult parts was writing the python test program and incoporating the ACTS output to it. There were multiple parts of the test code which we struggled with such as incorporating the ACTS output to test and running csv2json with the specified parameters.
+
+#### What did you feel would have made your experience easier at a technical level?
+It would have been helpful to have some more guidance around implementing the test program since we were new to a lot of aspects in this exercise. Also some kind of restriction or guide to how complex/simple our tests should be.
