@@ -1,0 +1,42 @@
+[
+  {
+    "age": "34",
+    "department": "Engineering",
+    "id": "1",
+    "is_active": "true",
+    "name.first": "Daniel",
+    "name.last": "Mason",
+    "name.list.1": "Dan",
+    "name.list.2": "Danny"
+  },
+  {
+    "age": "29",
+    "department": "Operations",
+    "id": "2",
+    "is_active": "false",
+    "name.first": "Sarah",
+    "name.last": "Connor",
+    "name.list.1": "Sallie",
+    "name.list.2": ""
+  },
+  {
+    "age": "41",
+    "department": "Design",
+    "id": "3",
+    "is_active": "true",
+    "name.first": "Alex",
+    "name.last": "Rios",
+    "name.list.1": "Lex",
+    "name.list.2": "Al"
+  },
+  {
+    "age": "38",
+    "department": "Legal",
+    "id": "6",
+    "is_active": "false",
+    "name.first": "Jordan",
+    "name.last": "Taylor",
+    "name.list.1": "",
+    "name.list.2": ""
+  }
+]

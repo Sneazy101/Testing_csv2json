@@ -1,0 +1,1 @@
+id,name.first,name.last,name.list.1,name.list.2,age,department,is_active\r\n1,Daniel,Mason,Dan,Danny,34,Engineering,true\r\n2,Sarah,Connor,Sallie,,29,Operations,false\r\n3,Alex,Rios,Lex,Al,41,Design,true\r\n4,Morgan,Lee,Morg,,,30,,\r\n5,,,,,,25,Sales,true\r\n6,Jordan,Taylor,,,38,Legal,false\r\n7,,,,,,,,\r\n
