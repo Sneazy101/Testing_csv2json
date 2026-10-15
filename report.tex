@@ -59,8 +59,9 @@
 partitioning}\label{testing-with-input-space-partitioning}
 
 We are testing a \texttt{csv2json} program written in Rust that we found
-on \href{https://github.com/benkay86/csv2json}{GitHub} \#\#
-Specification of the Program Under Test \texttt{CSV} (Comma Separated
+on \href{https://github.com/benkay86/csv2json}{GitHub}
+\subsection{Specification of the Program Under Test}
+\texttt{CSV} (Comma Separated
 Values) files are used for representing data in spreadsheet programs.
 According to
 \href{https://www.rfc-editor.org/info/rfc4180/\#section-2}{RFC 4180}: 1.
@@ -215,6 +216,19 @@ following three literal names:
   true
 \end{verbatim}
 
+\subsubsection{Input and Output relationship + Corner
+Cases}\label{input-and-output-relationship-corner-cases}
+
+In addition to typical inputs, csv2json could encounter corner cases in
+the input that affect the JSON output, such as:
+
+\begin{verbatim}
+  Empty file input: An Empty CSV file or files with only headers
+  Missing/Extra fields: More or less fields than the header specified
+  Empty values: Empty fields, partially or fully empty row
+  Array style headers: header such as name.first, name.last
+\end{verbatim}
+
 \subsection{Input Space Partitioning}\label{input-space-partitioning}
 
 \subsubsection{Component and input
@@ -255,63 +269,93 @@ domain into characteristics and mutually exclusive blocks (levels).
 \paragraph{\texorpdfstring{\emph{Characteristic 1: Input File
 State}}{Characteristic 1: Input File State}}\label{characteristic-1-input-file-state}
 
-Blocks: - Valid Data - Empty File - Malformed CSV (e.g., unmatched
-quotes). - Header only, missing file
-
+Blocks:
+\begin{itemize}
+  \item Valid CSV Data
+  \item Empty File
+  \item Malformed CSV (e.g., unmatched
+  quotes).
+  \item Header only, missing file
+\end{itemize}
 \paragraph{\texorpdfstring{\emph{Characteristic 2: Delimiter Option
 (\texttt{-\/-delimiter},
-\texttt{-d})}}{Characteristic 2: Delimiter Option (-\/-delimiter, -d)}}\label{characteristic-2-delimiter-option---delimiter--d}
+\texttt{-d})}}{Characteristic 2: Delimiter Option (-\/-delimiter,
+\itemd)}}\label{characteristic-2-delimiter-option---delimiter--d}
 
-Blocks: - Default (Comma) - Custom (e.g., \texttt{‘;’} or \texttt{‘:’}).
-Possible edge: - Empty value - Multiple characters - Delimiter inside
-quotes - Different character from in file
+Blocks:
+\begin{itemize}
+\item Default (Comma)
+\item Custom (e.g., \texttt{‘;’} or \texttt{‘:’}).
+\end{itemize}
 
 \paragraph{\texorpdfstring{\emph{Characteristic 3: Dimensional Separator
 (\texttt{-D})}}{Characteristic 3: Dimensional Separator (-D)}}\label{characteristic-3-dimensional-separator--d}
 
-Blocks: - None (Default) - Custom (e.g., Dot .) - Multidimensional (ex.
-\texttt{a.b.c}) - Incorrect formats (\texttt{.a}, \texttt{a.},
-\texttt{a..b})\\
-- Conflicting keys (\texttt{a} \& \texttt{a.b} in same header)
+Blocks:
+\begin{itemize}
+  \item None (Default)
+  \item Custom (e.g., Dot .)
+  \item Multidimensional (ex. \texttt{a.b.c})
+  \item Incorrect formats (\texttt{.a}, \texttt{a.}, \texttt{a..b})
+  \item Conflicting keys (\texttt{a} \& \texttt{a.b} in same header)
+\end{itemize}
 
 \paragraph{\texorpdfstring{\emph{Characteristic 4: Array Processing
 (\texttt{-\/-arrays} or \texttt{-a} with \texttt{-D} to break items to
-arrays)}}{Characteristic 4: Array Processing (-\/-arrays or -a with -D to break items to arrays)}}\label{characteristic-4-array-processing---arrays-or--a-with--d-to-break-items-to-arrays}
+arrays)}}{Characteristic 4: Array Processing (-\/-arrays or
+\itema with
+\itemD to break items to arrays)}}\label{characteristic-4-array-processing---arrays-or--a-with--d-to-break-items-to-arrays}
 
-Blocks: Enabled, Disabled. Edge: use without \texttt{-D}
+Blocks: Enabled, Disabled.
 
 \paragraph{\texorpdfstring{\emph{Characteristic 5: Output Formatting
 (Mutually
 Exclusive)}}{Characteristic 5: Output Formatting (Mutually Exclusive)}}\label{characteristic-5-output-formatting-mutually-exclusive}
 
-Blocks: - Standard JSON - Folded (\texttt{-F}) - JSONL
-(\texttt{-\/-jsonl}) Possible edge:\\
-both \texttt{-F} and \texttt{–jsonl} together
+Blocks:
+\begin{itemize}
+  \item Standard JSON
+  \item Folded (\texttt{-F})
+  \item JSONL
+  (\texttt{-\/-jsonl})
+\end{itemize}
 
 \paragraph{\texorpdfstring{\emph{Characteristic 6: Remove empty
 strings/objects (\texttt{-\/-remove-empty-strings},
-\texttt{–-remove-empty-objects})}}{Characteristic 6: Remove empty strings/objects (-\/-remove-empty-strings, ---remove-empty-objects)}}\label{characteristic-6-remove-empty-stringsobjects---remove-empty-strings--remove-empty-objects}
+\texttt{–-remove-empty-objects})}}{Characteristic 6: Remove empty strings/objects (-\/-remove-empty-strings,
+\item--remove-empty-objects)}}\label{characteristic-6-remove-empty-stringsobjects---remove-empty-strings--remove-empty-objects}
 
-Blocks: - Use remove empty strings only - Use remove empty blocks only -
-Use none - Use both Both commands happen to both arrays and objects
-(warned there may be undesired effects) Empty rows, partially empty rows
+Blocks:
+\begin{itemize}
+  \item Use remove empty strings only
+  \item Use remove empty blocks only
+  \item Use none
+  \item Use both Both commands happen to both arrays and objects
+  (warned there may be undesired effects) Empty rows, partially empty rows
+\end{itemize}
 
 \paragraph{\texorpdfstring{\emph{Characteristic 7: output destination
 (\texttt{-\/-out-dir},
-\texttt{-–out-name})}}{Characteristic 7: output destination (-\/-out-dir, -\/--out-name)}}\label{characteristic-7-output-destination---out-dir--out-name}
+\texttt{-–out-name})}}{Characteristic 7: output destination (-\/-out-dir,
+\item\/--out-name)}}\label{characteristic-7-output-destination---out-dir--out-name}
 
-Blocks: - Default (stdout) - \texttt{–out-dir}, - \texttt{–out-dir} with
-\texttt{–out-name} Possible edge: - Missing directory value - Directory
-doesn't exist - Duplicate file name exists
+Blocks:
+\begin{itemize}
+  \item Default (stdout)
+  \item \texttt{–out-dir},
+  \item \texttt{–out-dir} with \texttt{–out-name}
+\end{itemize}
 
 \paragraph{\texorpdfstring{\emph{Characteristic 8: Column type
 conversion (\texttt{-\/-boolean},
-\texttt{–numeric})}}{Characteristic 8: Column type conversion (-\/-boolean, --numeric)}}\label{characteristic-8-column-type-conversion---boolean-numeric}
+\texttt{–numeric})}}{Characteristic 8: Column type conversion (-\/-boolean,
+\item-numeric)}}\label{characteristic-8-column-type-conversion---boolean-numeric}
 
-Blocks: - None - \texttt{-\/-numeric} only - \texttt{-–boolean} - both
-Possible edge: - Non-numeric in numeric column - Non-boolean in boolean
-column - Empty column
-
-\subsection{Reflection}\label{reflection}
-
+Blocks:
+\begin{itemize}
+  \item None
+  \item \texttt{-\/-numeric} only
+  \item \texttt{-–boolean}
+  \item both
+\end{itemize}
 \end{document}

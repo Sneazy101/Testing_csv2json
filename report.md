@@ -1,6 +1,7 @@
 # Testing with input space partitioning
 We are testing a `csv2json` program written in Rust that we found on [GitHub](https://github.com/benkay86/csv2json)
 ## Specification of the Program Under Test
+  
 `CSV` (Comma Separated Values) files are used for representing data in spreadsheet programs. According to [RFC 4180](https://www.rfc-editor.org/info/rfc4180/#section-2):
 1.  Each record is located on a separate line, delimited by a line
        break (CRLF).  For example:
@@ -169,4 +170,11 @@ Blocks:
 - `--numeric` only
 - `-–boolean`
 - both
+
+## Combinatorial Test Generation using ACTS
+We generated a suite of 10 tests with 8 parameters each using ACTS, which all passed. Given our 8 parameters and the number of values they can take, had we not used pairwise testing we would've generated: $2^6\times3^2 = 576$ tests
+
+Some combinations in our suite are never run. For example, the triple (`-a`, `-D .`, `--fold`) never appears: Configuration 2 has `-a` and `-D .` but uses `--jsonl`, Configuration 4 has `-D` . and `--fold` but no `-a`, and Configuration 7 has `-a` and `--fold` but no `-D`. If the program mishandles array syntax only when dimensional separators produce nested objects and output is folded, we would miss it.
+
+The implication is that pairwise testing is efficient at catching bugs caused by one or two options, which [empirical studies](https://youtu.be/vbXzLohMcQI?t=683) suggest are the majority, but it trades away confidence in rarer multi-option bugs. For a tool with this many interacting flags, we judged that 10 tests instead of 576 was a reasonable cost-benefit tradeoff, and if a failure appears we could add targeted 3-way tests around it.
 

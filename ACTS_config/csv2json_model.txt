@@ -2,10 +2,11 @@
 Name: csv2json
 
 [Parameter]
-input_file_stat (enum) : valid_data, empty_file
+input_file_stat (enum) : valid_data, empty_file -- 2
 delimiter (enum) null, -d :, -d ; --add comma param afterwarads
-dimensional_separator (enum) : null, -D .
-array_processing (enum) : null, -a
-remove_empty (enum) : null, --remove-empty-strings, --remove-empty-objects
-output_dest (enum) : null, --out-dir temp, --out-dir temp --out-name result
-type_conversion (enum) : null, --numeric, --boolean
+dimensional_separator (enum) : null, -D . -- 2 choices
+array_processing (enum) : null, -a -- 2 choices
+output_format (enum) : standard, folded, jsonl -- 3 choices
+remove_empty (enum) : null, --remove-empty-strings, --remove-empty-objects -- 3 choices
+output_dest (enum) : null, --out-dir temp, --out-dir temp --out-name result -- 3 choices
+type_conversion (enum) : null, --numeric, --boolean -- 3 choices
